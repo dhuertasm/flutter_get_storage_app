@@ -1,19 +1,27 @@
+
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get_storage/get_storage.dart';
 
 Future<void> main() async {
   await GetStorage.init();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  
+  MyApp({super.key});
+
+  var emailEditingController = TextEditingController();
+  var storage = GetStorage();
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return GetMaterialApp(
+      title: 'Flutter Storage demo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -26,7 +34,55 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('storage demo'),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: emailEditingController,
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: TextButton(
+                  child: const Text('Write'),
+                  onPressed: () {
+                    if (GetUtils.isEmail(emailEditingController.text)) {
+                      storage.write("email", emailEditingController.text);
+                    } else {
+                      Get.snackbar("Incorrect Email", "Provide Email in valid format",
+                      colorText: Colors.white,
+                      backgroundColor: Colors.red,
+                      snackPosition: SnackPosition.BOTTOM);
+                    }
+                  },
+                ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                TextButton(
+                  onPressed: (){
+                    print("The email is ${storage.read('email')}");
+                  },
+                   child: const Text('Read'))
+
+            ],
+          ),
+        ),
+
+      ),
     );
   }
 }
